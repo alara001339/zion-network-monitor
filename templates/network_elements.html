@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Elements IA - ZION Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/zion-futuristic.css">
+    <style>
+        :root {
+            --primary-cyan: #00f5ff;
+            --primary-blue: #0066ff;
+            --primary-purple: #6366f1;
+            --accent-green: #00ff88;
+            --accent-orange: #ff6b35;
+            --dark-bg: #0a0a0f;
+            --card-bg: rgba(15, 23, 42, 0.8);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --border-glow: rgba(0, 245, 255, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: auto;
+            position: relative;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+
+        .container {
+            max-width: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, rgba(0, 245, 255, 0.1), rgba(99, 102, 241, 0.1));
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-glow);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: none;
+        }
+
+        .zion-logo {
+            color: var(--primary-cyan);
+            text-decoration: none;
+            font-weight: 900;
+            font-size: 32px;
+            text-shadow: 0 0 20px rgba(0, 245, 255, 0.8);
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        /* Elements Table */
+        .elements-table-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glow);
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .table-wrapper {
+            overflow: auto;
+            max-height: calc(100vh - 250px);
+            width: 100%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            min-width: 1800px;
+            table-layout: fixed;
+        }
+
+        th {
+            background: linear-gradient(135deg, rgba(0, 245, 255, 0.1), rgba(99, 102, 241, 0.1));
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-glow);
+            padding: 12px 8px;
+            text-align: left;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            white-space: nowrap;
+            font-size: 10px;
+            text-transform: uppercase;
+            color: var(--primary-cyan);
+            text-shadow: 0 0 10px rgba(0, 245, 255, 0.5);
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            border: 1px solid rgba(0, 245, 255, 0.1);
+            padding: 8px;
+            vertical-align: top;
+            word-wrap: break-word;
+            background: rgba(15, 23, 42, 0.6);
+            transition: background-color 0.2s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><a href="/" class="zion-logo">ZION</a> – Network Elements IA</h1>
+        <div class="header-right">
+            <button class="btn btn-secondary" onclick="syncElements()">
+                🔄 Sincronizar
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="elements-table-container">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Tipo</th>
+                            <th>IP Address</th>
+                            <th>Estado</th>
+                            <th>Ubicación</th>
+                            <th>Detalles</th>
+                        </tr>
+                    </thead>
+                    <tbody id="elementsTableBody">
+                        <!-- Dynamic content -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function syncElements() {
+            try {
+                const response = await fetch('/network-elements/api/network-elements/sync/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({})
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    console.log('Sync successful');
+                } else {
+                    console.error('Sync failed');
+                }
+            } catch (error) {
+                console.error('Error syncing elements:', error);
+            }
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</body>
+</html>
